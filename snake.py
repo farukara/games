@@ -3,9 +3,14 @@ from typing import List
 
 
 class Snake():
-    def __init__(self, head_position: List= [400,300], body_positions=[[360,300],[320,300],[280,300]]):
+    def __init__(self, head_position: List= [120,0], body_positions: List=[[0,0],[40,0],[80,0]]):
         self.head_position = head_position
         self.body_positions = body_positions
+
+class Food():
+    def __init__(self, position: List):
+        self.position = position
+
     
 def snake_movement(head_position, key, movement_direction):
     if movement_direction == "L":
@@ -62,6 +67,7 @@ def main():
     HEIGHT = 600
     BLACK = (0,0,0)
     BLUE = (0,0,200)
+    MAGENTA = (200,0,200)
     snake_size = [40, 40]
     #snake_speed = 5
     key = "R"
@@ -71,8 +77,16 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     snake = Snake()
+    food = Food(position = [200, 120])
     game_over = False
     while not game_over:
+        screen.fill(BLACK)
+
+        pygame.draw.rect(screen, BLUE, tuple(snake.head_position + snake_size), 3)
+        for single_body in snake.body_positions:
+            pygame.draw.rect(screen, BLUE, tuple(single_body + snake_size), 3)
+        pygame.draw.rect(screen, MAGENTA, tuple(food.position + snake_size), 3)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -85,18 +99,13 @@ def main():
                     key = 'U'
                 elif event.key == pygame.K_DOWN:
                     key = 'D'
-        screen.fill(BLACK)
-        snake.body_positions.insert(0, [snake.head_position[0], snake.head_position[1]])
+        
+        snake.body_positions.insert(0, snake.head_position)
         snake.body_positions.pop()
         snake.head_position, movement_direction = snake_movement(snake.head_position, key,  movement_direction)
 
-        pygame.draw.rect(screen, BLUE, (snake.head_position[0], snake.head_position[1], snake_size[0], snake_size[1]), 3)
-        for single_body in snake.body_positions:
-            pygame.draw.rect(screen, BLUE, (single_body[0], single_body[1], snake_size[0], snake_size[1]), 3)
-            
-
         clock.tick(30)
-        pygame.time.delay(300)
+        pygame.time.delay(500)
         pygame.display.update()
 
 if __name__ == "__main__":
